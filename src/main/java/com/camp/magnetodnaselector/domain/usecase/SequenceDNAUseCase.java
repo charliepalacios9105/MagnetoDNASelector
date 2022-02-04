@@ -1,5 +1,6 @@
 package com.camp.magnetodnaselector.domain.usecase;
 
+import com.camp.magnetodnaselector.domain.exception.InvalidDNAException;
 import com.camp.magnetodnaselector.domain.model.SequenceDNAModel;
 import com.camp.magnetodnaselector.domain.model.StatModel;
 import com.camp.magnetodnaselector.domain.model.gateway.SequenceDNARepository;
@@ -45,7 +46,7 @@ public class SequenceDNAUseCase {
     private final SequenceDNARepository sequenceDNARepository;
     private final StatRepository statRepository;
 
-    public boolean isMutant(SequenceDNAModel sequenceDNAModel) {
+    public boolean isMutant(SequenceDNAModel sequenceDNAModel) throws InvalidDNAException {
         Boolean res = sequenceDNARepository.isMutantSavedDNA(sequenceDNAModel.getDna());
         if (res == null) {
             AtomicInteger count = new AtomicInteger(0);
@@ -61,21 +62,24 @@ public class SequenceDNAUseCase {
         return res;
     }
 
-    private void validDNASequence(AtomicInteger count, String[] dna, int size) {
+    private void validDNASequence(AtomicInteger count, String[] dna, int size) throws InvalidDNAException {
+        if (size < SEQUENCE_SIZE) {
+            throw new InvalidDNAException("The length of the DNA string is less than the minimum allowed");
+        }
         for (String seq : dna) {
             if (seq.length() != size) {//No es valida la secuencia si el tamanio de alguno de sus elementos es direfente al taminio del vector
-                break;
+                throw new InvalidDNAException("The length of an individual string is different than the DNA string");
             }
             Matcher validateMatcher = VALID_CHAR_PATTERN.matcher(seq);//No es valida la secuencia si contiene caracteres diferentes a los establecidos en el patron de validacion
             if (validateMatcher.matches()) {
                 evalSequence(seq, count); // Se hace una primera evaluacion de las cadenas que componen el vector, siendo esta la evalucion del las horizontales
             } else {
-                break;
+                throw new InvalidDNAException("The individual string has illegal characters");
             }
         }
     }
 
-    public void generateAndEvalSubsequence(String[] dna, AtomicInteger count, int size) {
+    private void generateAndEvalSubsequence(String[] dna, AtomicInteger count, int size) {
         StringBuilder topLeftDiagonalSeq = new StringBuilder("");
         StringBuilder lowerRightDiagonalSeq = new StringBuilder("");
         StringBuilder lowerLeftDiagonalSeq = new StringBuilder("");
@@ -83,7 +87,7 @@ public class SequenceDNAUseCase {
         StringBuilder verticalSeq = new StringBuilder("");
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if ((i + SEQUENCE_SIZE) <= size && (j < (size - i))) { //ValidaciOn para evitar las cadenas diagonales de menor logitud al tamanio de la secuencia
+                if ((i + SEQUENCE_SIZE) <= size && (j < (size - i))) { //Validacion para evitar las cadenas diagonales de menor logitud al tamanio de la secuencia
                     lowerLeftDiagonalSeq.append(dna[i + j].charAt((size - 1) - j));
                     topRightDiagonalSeq.append(dna[j].charAt(j + i));
                     if (i > 0) {//Para que no se repitan las diagonales principales
@@ -113,10 +117,8 @@ public class SequenceDNAUseCase {
     }
 
     private void evalSequence(String seq, AtomicInteger count) {
-        if (!seq.isEmpty()) {
-            Matcher m = COUNT_SEQUENCE_PATTERN.matcher(seq);
-            count.addAndGet((int) m.results().count());
-        }
+        Matcher m = COUNT_SEQUENCE_PATTERN.matcher(seq);
+        count.addAndGet((int) m.results().count());
     }
 
     public StatModel getStat() {

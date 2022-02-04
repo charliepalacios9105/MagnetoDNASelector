@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Builder(toBuilder = true)
 public class RequestSequence {
-
     private String[] sequence;
     private boolean mutant;
 

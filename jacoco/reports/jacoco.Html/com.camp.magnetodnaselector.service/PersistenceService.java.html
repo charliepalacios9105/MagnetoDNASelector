@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PersistenceService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MagnetoDNASelector</a> &gt; <a href="index.source.html" class="el_package">com.camp.magnetodnaselector.service</a> &gt; <span class="el_source">PersistenceService.java</span></div><h1>PersistenceService.java</h1><pre class="source lang-java linenums">package com.camp.magnetodnaselector.service;
+
+import com.camp.magnetodnaselector.domain.model.SequenceDNAModel;
+import com.camp.magnetodnaselector.domain.model.StatModel;
+import com.camp.magnetodnaselector.domain.model.gateway.SequenceDNARepository;
+import com.camp.magnetodnaselector.domain.model.gateway.StatRepository;
+import com.camp.magnetodnaselector.persitence.entity.RequestSequence;
+import com.camp.magnetodnaselector.persitence.pojo.AggResultDNACount;
+import com.camp.magnetodnaselector.persitence.repository.RequestSequenceRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+
+@RequiredArgsConstructor
+@Service
+public class PersistenceService implements SequenceDNARepository, StatRepository {
+
+    private final RequestSequenceRepository requestSequenceRepository;
+    private final MongoTemplate mongoTemplate;
+
+    private List&lt;AggResultDNACount&gt; findStats() {
+<span class="nc" id="L28">        Aggregation agg = newAggregation(</span>
+<span class="nc" id="L29">                group(&quot;mutant&quot;).count().as(&quot;total&quot;),</span>
+<span class="nc" id="L30">                project(&quot;total&quot;).and(&quot;mutant&quot;).previousOperation()</span>
+
+        );
+<span class="nc" id="L33">        AggregationResults&lt;AggResultDNACount&gt; groupResults</span>
+<span class="nc" id="L34">                = mongoTemplate.aggregate(agg, RequestSequence.class, AggResultDNACount.class);</span>
+<span class="nc" id="L35">        return groupResults.getMappedResults();</span>
+    }
+
+    public Boolean isMutantSavedDNA(String[] dna) {
+<span class="nc" id="L39">        RequestSequence requestSequence = requestSequenceRepository.findBySequence(dna).orElse(null);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        return requestSequence != null ? requestSequence.isMutant() : null;</span>
+    }
+
+    public void saveDNA(SequenceDNAModel sequenceDNAModel, boolean mutant) {
+<span class="nc" id="L44">        requestSequenceRepository.save(RequestSequence.builder()</span>
+<span class="nc" id="L45">                .sequence(sequenceDNAModel.getDna())</span>
+<span class="nc" id="L46">                .mutant(mutant).build());</span>
+<span class="nc" id="L47">    }</span>
+
+
+    @Override
+    public StatModel getStat() {
+<span class="nc" id="L52">        List&lt;AggResultDNACount&gt; stats = findStats();</span>
+<span class="nc" id="L53">        StatModel statModel = StatModel.builder().build();</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (AggResultDNACount ar : stats) {</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            if (ar.isMutant()) {</span>
+<span class="nc" id="L56">                statModel.setCountMutantDNA(ar.getTotal());</span>
+            } else {
+<span class="nc" id="L58">                statModel.setCountHumanDNA(ar.getTotal());</span>
+            }
+<span class="nc" id="L60">        }</span>
+<span class="nc" id="L61">        calRatio(statModel);</span>
+<span class="nc" id="L62">        return statModel;</span>
+    }
+
+    @Override
+    public void calRatio(StatModel statModel) {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        if (statModel.getCountHumanDNA() &gt; 0 &amp;&amp; statModel.getCountMutantDNA() &gt; 0) {</span>
+<span class="nc" id="L68">            statModel.setRatio(Math.round((((double) statModel.getCountMutantDNA() / (double) statModel.getCountHumanDNA()) * 100d)) / 100d);</span>
+        }
+<span class="nc" id="L70">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

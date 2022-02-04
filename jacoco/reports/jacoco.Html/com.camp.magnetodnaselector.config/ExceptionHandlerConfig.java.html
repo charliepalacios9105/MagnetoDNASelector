@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionHandlerConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MagnetoDNASelector</a> &gt; <a href="index.source.html" class="el_package">com.camp.magnetodnaselector.config</a> &gt; <span class="el_source">ExceptionHandlerConfig.java</span></div><h1>ExceptionHandlerConfig.java</h1><pre class="source lang-java linenums">package com.camp.magnetodnaselector.config;
+
+import com.camp.magnetodnaselector.config.model.ErrorModel;
+import com.camp.magnetodnaselector.domain.exception.InvalidDNAException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import javax.servlet.http.HttpServletRequest;
+
+@ControllerAdvice
+<span class="fc" id="L14">public class ExceptionHandlerConfig {</span>
+
+    @ExceptionHandler({InvalidDNAException.class, HttpMessageNotReadableException.class})
+    public ResponseEntity&lt;ErrorModel&gt; handleInvalidDNAException(
+            HttpServletRequest request,
+            Exception ex) {
+<span class="fc" id="L20">        ErrorModel errorModel = ErrorModel.builder()</span>
+<span class="fc" id="L21">                .timestamp(System.currentTimeMillis())</span>
+<span class="fc" id="L22">                .type(ex.getClass().getSimpleName())</span>
+<span class="fc" id="L23">                .message(ex.getMessage()).build();</span>
+<span class="fc" id="L24">        return new ResponseEntity&lt;&gt;(errorModel, HttpStatus.BAD_REQUEST);</span>
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity&lt;ErrorModel&gt; handleGeneralException(
+            HttpServletRequest request,
+            Exception ex) {
+<span class="fc" id="L31">        ErrorModel errorModel = ErrorModel.builder()</span>
+<span class="fc" id="L32">                .timestamp(System.currentTimeMillis())</span>
+<span class="fc" id="L33">                .type(ex.getClass().getSimpleName())</span>
+<span class="fc" id="L34">                .message(ex.getMessage()).build();</span>
+<span class="fc" id="L35">        return new ResponseEntity&lt;&gt;(errorModel, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

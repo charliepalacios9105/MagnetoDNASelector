@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -33,10 +32,7 @@ public class PersistenceService implements SequenceDNARepository, StatRepository
         );
         AggregationResults<AggResultDNACount> groupResults
                 = mongoTemplate.aggregate(agg, RequestSequence.class, AggResultDNACount.class);
-        List<AggResultDNACount> result = groupResults.getMappedResults();
-        result.stream().collect(
-                Collectors.toMap(AggResultDNACount::isMutant, AggResultDNACount::getTotal));
-        return result;
+        return groupResults.getMappedResults();
     }
 
     public Boolean isMutantSavedDNA(String[] dna) {
@@ -54,14 +50,22 @@ public class PersistenceService implements SequenceDNARepository, StatRepository
     @Override
     public StatModel getStat() {
         List<AggResultDNACount> stats = findStats();
-        StatModel statModel = new StatModel();
-        stats.stream().forEach(ar -> {
+        StatModel statModel = StatModel.builder().build();
+        for (AggResultDNACount ar : stats) {
             if (ar.isMutant()) {
                 statModel.setCountMutantDNA(ar.getTotal());
             } else {
                 statModel.setCountHumanDNA(ar.getTotal());
             }
-        });
+        }
+        calRatio(statModel);
         return statModel;
+    }
+
+    @Override
+    public void calRatio(StatModel statModel) {
+        if (statModel.getCountHumanDNA() > 0 && statModel.getCountMutantDNA() > 0) {
+            statModel.setRatio(Math.round((((double) statModel.getCountMutantDNA() / (double) statModel.getCountHumanDNA()) * 100d)) / 100d);
+        }
     }
 }

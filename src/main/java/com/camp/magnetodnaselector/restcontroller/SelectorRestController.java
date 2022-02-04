@@ -1,6 +1,7 @@
 package com.camp.magnetodnaselector.restcontroller;
 
 
+import com.camp.magnetodnaselector.domain.exception.InvalidDNAException;
 import com.camp.magnetodnaselector.domain.model.SequenceDNAModel;
 import com.camp.magnetodnaselector.service.SelectorService;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +23,15 @@ public class SelectorRestController {
     }
 
     @PostMapping(value = "/mutant")
-    public ResponseEntity isMutant(@RequestBody SequenceDNAModel sequenceDNAModel) {
+    public ResponseEntity<Object> isMutant(@RequestBody SequenceDNAModel sequenceDNAModel) throws InvalidDNAException {
         return selectorService.isMutant(sequenceDNAModel) ?
-                new ResponseEntity(HttpStatus.OK) :
-                new ResponseEntity(HttpStatus.FORBIDDEN);
+                new ResponseEntity<>(HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @GetMapping(value = "/stats", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getStat() {
-        return new ResponseEntity(selectorService.findStats(), HttpStatus.OK);
+    public ResponseEntity<Object> getStat() {
+        return new ResponseEntity<>(selectorService.findStats(), HttpStatus.OK);
     }
 
 }

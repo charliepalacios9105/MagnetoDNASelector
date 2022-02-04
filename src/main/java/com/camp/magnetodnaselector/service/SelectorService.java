@@ -1,5 +1,6 @@
 package com.camp.magnetodnaselector.service;
 
+import com.camp.magnetodnaselector.domain.exception.InvalidDNAException;
 import com.camp.magnetodnaselector.domain.model.SequenceDNAModel;
 import com.camp.magnetodnaselector.domain.model.StatModel;
 import com.camp.magnetodnaselector.domain.usecase.SequenceDNAUseCase;
@@ -12,7 +13,7 @@ public class SelectorService {
 
     private final SequenceDNAUseCase sequenceDNAUseCase;
 
-    public boolean isMutant(SequenceDNAModel sequenceDNAModel) {
+    public boolean isMutant(SequenceDNAModel sequenceDNAModel) throws InvalidDNAException {
         return sequenceDNAUseCase.isMutant(sequenceDNAModel);
     }
 

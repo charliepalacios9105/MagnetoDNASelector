@@ -6,4 +6,6 @@ public interface StatRepository {
 
     StatModel getStat();
 
+    void calRatio(StatModel statModel);
+
 }
