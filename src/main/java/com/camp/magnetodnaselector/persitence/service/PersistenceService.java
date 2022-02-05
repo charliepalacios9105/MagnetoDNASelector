@@ -91,7 +91,7 @@ public class PersistenceService implements SequenceDNARepository, StatRepository
 
 
     /**
-     * Ha el llamado al metodo {@link #findStats()} y a partir del
+     * Hace el llamado al metodo {@link #findStats()} y a partir del
      * resultado creara el objeto de la clase {@link StatModel} el cual
      * contiene los valores especificacdos por las reglas de negocio para el
      * servicio de estadistica

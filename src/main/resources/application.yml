@@ -1,5 +1,5 @@
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://camp:D0CfF9iHd5Aqw8sC@clustercamp.4y1vg.mongodb.net/test
-      database: meli
+      uri: #URL de la base de datos MongoDB
+      database: #Nombre de la base de datos MongoDB
