@@ -96,8 +96,82 @@ Para cumplir con el desafío en su primer nivel se implementó un algoritmo en e
 
   ![image](https://user-images.githubusercontent.com/21184033/152654036-7656631e-780a-47f9-af86-178d61ab5330.png)
 
-7. Para las matrices que no cumplen la condición del mutante se realizará todo el recorrido, sin embargo, cada vez que se evalúa una cadena se verifica si la condición del mutante se cumplió lo cual causa que la ejecución del proceso se detenga y se retorne true. A continuación, las interacciones que se hacen para una matriz de ejemplo que si cumple con la condición.
+7. Para las matrices que no cumplen la condición del mutante se realizará todo el recorrido, sin embargo, cada vez que se evalúa una cadena se verifica si la condición del mutante se cumplió lo cual causa que la ejecución del proceso se detenga y se retorne true. A continuación, las interacciones que se hacen para una matriz de ejemplo que si cumple con la condición. Donde la primera secuencia valida se encuentra en una de las diagonales principales y la segunda en la sexta vertical.
 
   ![image](https://user-images.githubusercontent.com/21184033/152654472-af0174da-3c99-472e-b8d4-0933687969ea.png)
 
-  
+  ### Nivel 2
+
+Para cumplir el desafío en su segundo nivel se integró el algoritmo a un proyecto SpringBoot, donde se desarrollaron los componentes necesarios para exponer el servicio POST que recibirá la siguiente estructura JSON en su body. 
+
+	{
+    	"dna": String[]
+	}
+
+El despliegue se realizo por medio del servicio AWS Elastic Beanstalk, los datos para el consumo son los siguientes:
+
+* __EndPoint__:
+* __Metodo__: POST
+* __Tipo:__ Body
+* __Formato:__ JSON
+* __Ejemplo:__ {"dna":["ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"]}
+
+Un ejemplo de consumo desde postman se vería de la siguiente manera:
+	
+![image](https://user-images.githubusercontent.com/21184033/152655136-c2698e4b-74c6-4f70-9425-e83b9c2dc64f.png)
+
+Las posibles respuestas exitosas que tiene el servico se verifican según la especificación por el código de respuesta de la peticion siendo 200 para true y 403 para false, según las especifiacaciones dadas el body del response debe estar vacio en ambos casos.
+
+En los casos donde se presente un error a nivel del servicio o en la parametrización del mismo el body del response mostrará los datos de descripción del error y el código de la respuesta será un 500 o 400 segun sea el caso.
+
+![image](https://user-images.githubusercontent.com/21184033/152655421-6d99f604-a26a-4f51-bf19-ed54eafff220.png)
+
+  ### Nivel 3
+	
+Para cumplir con el desafío en su tercer nivel se implementó una base de datos MongoDB donde en un documento de guardan colecciones con las siguiente estructura:
+	
+	{
+	"sequence": String[],
+	"mutant": boolean
+	}
+ 
+Ya que existe un componente de persistencia cuyo objetivo es guardar las peticiones realizadas y el resultado de la validación del algoritmo isMutant, al algoritmo de validación se le agrego una búsqueda inicial a esta base de datos donde si la cadena ya esta registrada no se valida el algoritmo de validación, si no se devuelve el valor guardado en el campo “mutant” de la colección encontrada, en otro caso se ejecutará el algoritmo y la cadena y el resultado se guardará en la estructura document de MongoDB.
+	
+los datos para el consumo son los siguientes:
+
+* __EndPoint__:
+* __Metodo__: GET
+
+La respuesta exitosa a este consumo traerá en el body del response la siguiente estructura:
+
+	{
+	"count_mutant_dna": int,
+	"count_human_dna": int,
+	"ratio": double
+	}
+	
+Un ejemplo de consumo desde postman se vería de la siguiente manera:
+
+![image](https://user-images.githubusercontent.com/21184033/152657718-a33e5db6-601d-489d-8c8e-86355b6fac50.png)
+
+## Anexos
+	
+  ### Anexos 1: Arquitectura de la solución
+	
+![image](https://user-images.githubusercontent.com/21184033/152659623-a2f7fcb2-e1f1-489b-bf64-40209efe422d.png)
+
+1. El cliente realiza las peticiones http al componente de aplicación Web cuyo punto de entrada en un balanceador de carga por defecto creado por el servicio AWS Elastic Beanstalk. 
+2. El balanceador de carga redirige la petición al contenedor Elastic Beanstalk. El sericio de AWS Elastic Beanstalk permite el escalamiento de esta infraestructura por lo cual se podrían crear mas contenedores bajo el balanceador de carga.
+3. El componente de la aplicación Web tiene una conexión directa con una base de datos desplegada en el servicio Atlas de MongoDB, el cual también esta contenido en AWS.
+
+
+	
+  ### Anexos 2: Informe de cobertura de pruebas
+	
+  ### Anexos 3: Ánalisis de Sonar [ir](https://sonarcloud.io/summary/overall?id=charliepalacios9105_MagnetoDNASelector)
+	
+
+
+	
+
+	
