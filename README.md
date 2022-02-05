@@ -110,7 +110,8 @@ Para cumplir el desafío en su segundo nivel se integró el algoritmo a un proye
 
 El despliegue se realizo por medio del servicio AWS Elastic Beanstalk, los datos para el consumo son los siguientes:
 
-* __EndPoint__:
+* __EndPoint__: 
+	http://magnetodnaselector-env.eba-pevaumps.us-east-1.elasticbeanstalk.com/selector/mutant
 * __Metodo__: POST
 * __Tipo:__ Body
 * __Formato:__ JSON
@@ -139,7 +140,8 @@ Ya que existe un componente de persistencia cuyo objetivo es guardar las peticio
 	
 los datos para el consumo son los siguientes:
 
-* __EndPoint__:
+* __EndPoint__: 
+	http://magnetodnaselector-env.eba-pevaumps.us-east-1.elasticbeanstalk.com/selector/stats
 * __Metodo__: GET
 
 La respuesta exitosa a este consumo traerá en el body del response la siguiente estructura:
