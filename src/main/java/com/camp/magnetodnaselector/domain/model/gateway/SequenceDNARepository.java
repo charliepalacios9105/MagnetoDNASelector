@@ -16,7 +16,7 @@ public interface SequenceDNARepository {
      * y en tal caso retorar falso o verdadero para determinar si cumple con
      * las condiciones de mutante
      *
-     * @param dna cadena de AND que se debe buscar
+     * @param dna cadena de ADN que se debe buscar
      * @return si se encuentra la cadena guardada el valor que determina si es mutante,
      * en otro caso null
      */
@@ -26,7 +26,7 @@ public interface SequenceDNARepository {
      * En su implementacion debe guardar en algun medio de persistencia las
      * secuencia de ADN y el booleano que determina si es un mutante
      *
-     * @param sequenceDNAModel La cadena de AND a guardar
+     * @param sequenceDNAModel La cadena de ADN a guardar
      * @param mutant           Campo que determina si la cadena a
      *                         guadar cumple con la condicion del mutante
      */

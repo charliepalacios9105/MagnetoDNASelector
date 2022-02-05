@@ -13,6 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Pruebas para la clase {@link SelectorService}
+ * Se anota con @SpringBootTest para crear un contexto de prueba
+ * de SpringBoot para la clase especifica
+ *
+ * @author Carlos Alberto Manrique Palacios
+ */
 @SpringBootTest(classes = {SelectorService.class})
 class SelectorServiceTest {
 
@@ -22,6 +29,15 @@ class SelectorServiceTest {
     @Autowired
     private SelectorService selectorService;
 
+    /**
+     * Varifica el correcto llamado al objecto inyectado por el contenedor
+     * sequenceDNAUseCase que para la prueba sera un Mock
+     * <p>
+     * En este caso realiza la ejecucion del metodo isMutant y
+     * se simula una ejecucion normal con un respuesta true desde el Mock
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void isMutantTest() throws InvalidDNAException {
         String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
@@ -31,6 +47,15 @@ class SelectorServiceTest {
         verify(sequenceDNAUseCase).isMutant(sequenceDNAModel);
     }
 
+    /**
+     * Varifica el correcto llamado al objecto inyectado por el contenedor
+     * sequenceDNAUseCase que para la prueba sera un Mock
+     * <p>
+     * En este caso realiza la ejecucion del metodo isMutant y
+     * se simula que se lanza una excepcion  el Mock
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void isMutantThrowExceptionTest() throws InvalidDNAException {
         String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
@@ -40,6 +65,14 @@ class SelectorServiceTest {
         verify(sequenceDNAUseCase).isMutant(sequenceDNAModel);
     }
 
+    /**
+     * Varifica el correcto llamado al objecto inyectado por el contenedor
+     * sequenceDNAUseCase que para la prueba sera un Mock
+     * <p>
+     * En este caso realiza la ejecucion del metodo findStats y
+     * se simula una ejecucion normal con una respuesta del un objeto de la
+     * clase {@link StatModel} desde el Mock
+     */
     @Test
     void isFindTest() {
         StatModel statModel = StatModel.builder()

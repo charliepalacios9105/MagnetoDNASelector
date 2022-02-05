@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
  * cliente REST.
  * <p>
  * Cada metodo implementado se puede configurar para que en el
- * momento que la aplicacion lanza un tipo de excepcion al cliente
+ * momento en que la aplicacion lanza un tipo de excepcion al cliente
  * se intercepta y se le da el un tratamiento especifico.
  *
  * @author Carlos Alberto Manrique Palacios
@@ -58,7 +58,8 @@ public class ExceptionHandlerConfig {
      * fecha y hora representada en milisegundos, el tipo de excepcion
      * la cual sera el nombre de la clase de la excepcion y el mensaje de la excepcion.
      * <p>
-     * El codigo de la respuesta http sera 500 indicando que es un problema de request
+     * El codigo de la respuesta http sera 500 indicando que para cualquier otro tipo
+     * de excepcion se asume como un internal server error
      *
      * @param request objecto de la solictud realizada
      * @param ex      excepcion interceptada por el lanzador

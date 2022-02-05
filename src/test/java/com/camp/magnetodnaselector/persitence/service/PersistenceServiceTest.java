@@ -14,7 +14,18 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Pruebas para la clase {@link PersistenceService}
+ * Se anota con @SpringBootTest para crear un contexto de prueba
+ * de SpringBoot.
+ * <p>
+ * Por defecto la configuracion de spring al implementar la
+ * libreria flapdoodle.embed.mongo en test, el contexto de prueba carga
+ * una instancia de mongoDB en memoria lo que permite la realizacion de pruebas
+ * sobre un contexto de persistencia similar al de los ambientes productivos
+ *
+ * @author Carlos Alberto Manrique Palacios
+ */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class PersistenceServiceTest {
@@ -25,6 +36,11 @@ class PersistenceServiceTest {
     @Autowired
     private RequestSequenceRepository requestSequenceRepository;
 
+    /**
+     * Varifica el correcto guardado de un objeto de la clase
+     * {@link RequestSequence} como una coleccion del documento anotado
+     * en dicha clase
+     */
     @Test
     void saveDNATest() {
         requestSequenceRepository.deleteAll();
@@ -35,6 +51,10 @@ class PersistenceServiceTest {
         assertEquals(Arrays.toString(dna), Arrays.toString(requestSequence.getSequence()));
     }
 
+    /**
+     * Varifica la busqueda de una coleccion por medio de un secuencia dada
+     * al no existir dicha coleccion en la secuencia se espera un null
+     */
     @Test
     void isSavedDNANullTest() {
         String[] dna = {"ATGTGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
@@ -42,6 +62,11 @@ class PersistenceServiceTest {
         assertNull(res);
     }
 
+    /**
+     * Varifica la busqueda de una coleccion por medio de un secuencia dada
+     * al existir dicha secuencia y tener un valor true en el campo mutant se espera
+     * un true en la asercion
+     */
     @Test
     void isSavedDNATrueTest() {
         requestSequenceRepository.deleteAll();
@@ -52,6 +77,11 @@ class PersistenceServiceTest {
         assertTrue(res);
     }
 
+    /**
+     * Varifica la busqueda las estadisitcas para el caso donde solo hay
+     * un mutante registrado, se espera la correcta ejecucion en base de datos
+     * y un ratio de 0
+     */
     @Test
     void getStatOneMutantTest() {
         requestSequenceRepository.deleteAll();
@@ -64,6 +94,11 @@ class PersistenceServiceTest {
         assertEquals(1, stat.getCountMutantDNA());
     }
 
+    /**
+     * Varifica la busqueda las estadisitcas para el caso donde solo hay
+     * un humano registrado, se espera la correcta ejecucion en base de datos
+     * y un ratio de 0
+     */
     @Test
     void getStatOneHumanTest() {
         requestSequenceRepository.deleteAll();
@@ -76,6 +111,11 @@ class PersistenceServiceTest {
         assertEquals(0, stat.getCountMutantDNA());
     }
 
+    /**
+     * Varifica la busqueda las estadisitcas para el caso donde no hay
+     * datos registrados, se espera la correcta ejecucion en base de datos
+     * y un ratio de 0 y conteos de 0
+     */
     @Test
     void getStatNoDataTest() {
         requestSequenceRepository.deleteAll();
@@ -85,6 +125,12 @@ class PersistenceServiceTest {
         assertEquals(0, stat.getCountMutantDNA());
     }
 
+    /**
+     * Varifica la busqueda las estadisitcas para el caso donde
+     * se ingresan previamente 140 colecciones de las cuales 100 son
+     * de humanos y 40 de mutantes, se espera la correcta ejecucion
+     * en base de datos y un ratio de 0,4 y conteos 100 humanos y 40 mutantes
+     */
     @Test
     void getStatTest() {
         requestSequenceRepository.deleteAll();

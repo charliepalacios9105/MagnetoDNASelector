@@ -13,7 +13,7 @@ import lombok.Data;
 public class SequenceDNAModel {
 
     /**
-     * Cadena de ADN representada como un vector de Strind
+     * Cadena de ADN representada como un vector de String
      */
     private String[] dna;
 

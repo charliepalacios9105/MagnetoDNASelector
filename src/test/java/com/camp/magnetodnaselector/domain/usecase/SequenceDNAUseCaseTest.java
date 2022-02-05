@@ -14,6 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Clase de prueba para la clase de negocio {@link SequenceDNAUseCase}
+ *
+ * @author Carlos Alberto Manrique Palacios
+ */
 @ExtendWith(MockitoExtension.class)
 class SequenceDNAUseCaseTest {
 
@@ -27,6 +32,10 @@ class SequenceDNAUseCaseTest {
     private SequenceDNAUseCase sequenceDNAUseCase;
 
 
+    /**
+     * Prueba para la excepcion lanzada cuando la longitud del vector es menor al minimo
+     * permitido
+     */
     @Test
     void validDNASequenceLessThanMinimumAllowedTest() {
         String[] dna = {"AGGCGAG", "CTGTGGA", "TTAAGTT"};
@@ -41,6 +50,10 @@ class SequenceDNAUseCaseTest {
         assertEquals(msg, exception.getMessage());
     }
 
+    /**
+     * Prueba para la excepcion lanzada cuando la longitud de algun elemento del vector
+     * es digerente al del vector
+     */
     @Test
     void validDNASequenceLengthIndividualStringDifferentDNAStringTest() {
         String[] dna = {"AGGC", "CTGTA", "TTAA", "TGAA"};
@@ -55,6 +68,10 @@ class SequenceDNAUseCaseTest {
         assertEquals(msg, exception.getMessage());
     }
 
+    /**
+     * Prueba para la excepcion lanzada cuando existen caracteres no permitidos en algun
+     * elemento del vector
+     */
     @Test
     void validDNASequenceHasInvalidCharactersTest() {
         String[] dna = {"AGGCA", "CCTTA", "TTATA", "1qWAQ", "TGAGA"};
@@ -69,6 +86,12 @@ class SequenceDNAUseCaseTest {
         assertEquals(msg, exception.getMessage());
     }
 
+    /**
+     * Prueba para cuando existe respuesta desde la funcionalidad de
+     * busqueda de las cadenas
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void validDNASequenceValidResSavedDNATest() throws InvalidDNAException {
         String[] dna = {"GGGGA", "CCTTA", "TAAAA", "ATGTG", "TGAGA"};
@@ -78,6 +101,11 @@ class SequenceDNAUseCaseTest {
         assertFalse(res);
     }
 
+    /**
+     * Prueba para cuando se ecuentran las cadenas en la dimension horizontal
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void validDNASequenceHorizontalValidTest() throws InvalidDNAException {
         String[] dna = {"GGGGA", "CCTTA", "TAAAA", "ATGTG", "TGAGA"};
@@ -87,6 +115,11 @@ class SequenceDNAUseCaseTest {
         assertTrue(res);
     }
 
+    /**
+     * Prueba para cuando se ecuentran las cadenas en la dimension vertical
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void validDNASequenceVerticaValidTest() throws InvalidDNAException {
         String[] dna = {"GCTAA", "GCTTA", "GACAA", "GTGTA", "TGAGA"};
@@ -96,6 +129,11 @@ class SequenceDNAUseCaseTest {
         assertTrue(res);
     }
 
+    /**
+     * Prueba para cuando se ecuentran las cadenas en la dimension diagonal
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void validDNASequenceDiagonalValidTest() throws InvalidDNAException {
         String[] dna = {"GCTGA", "AGGTC", "CGGAC", "GTGGA", "TGAGA"};
@@ -105,6 +143,11 @@ class SequenceDNAUseCaseTest {
         assertTrue(res);
     }
 
+    /**
+     * Prueba para un vector que cumple la condicion del mutante
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void validDNASequenceValidTest() throws InvalidDNAException {
         String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
@@ -114,6 +157,11 @@ class SequenceDNAUseCaseTest {
         assertTrue(res);
     }
 
+    /**
+     * Prueba para un vector que no cumple la condicion del mutante
+     *
+     * @throws InvalidDNAException
+     */
     @Test
     void validDNASequenceBigTest() throws InvalidDNAException {
         String[] dna = {"AATTAATTAA", "CTCTCTCTCT", "CGCGCGCGCG", "TCTCTCTCTC", "GAGAGAGAGA", "AATTAATTAA", "CTCTCTCTCT", "CGCGCGCGCG", "TCTCTCTCTC", "GAGAGAGAGA"};
@@ -123,6 +171,9 @@ class SequenceDNAUseCaseTest {
         assertFalse(res);
     }
 
+    /**
+     * Prueba verificar el retorno del metodo getStat()
+     */
     @Test
     void returnStatModelTest() {
         StatModel statModel = StatModel.builder()

@@ -24,10 +24,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Pruebas para la clase {@link SelectorRestController}
+ * Se anota con @WebMvcTest para crear un contexto de prueba
+ * de SpringBoot para la clase que esta anotada con @RestController
+ * <p>
+ * Se importa la clase de configuracion {@link ExceptionHandlerConfig} para
+ * hacer pruebas del lanzamiento de excepciones
+ *
+ * @author Carlos Alberto Manrique Palacios
+ */
 @WebMvcTest(SelectorRestController.class)
 @Import(ExceptionHandlerConfig.class)
 class SelectorRestControllerTest {
 
+    /**
+     * Objeto que permite la simulacion de peticiones http
+     */
     @Autowired
     private MockMvc mvc;
 
@@ -41,6 +54,11 @@ class SelectorRestControllerTest {
         objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Prueba para el serivicio de verificación del aplicativo
+     *
+     * @throws Exception
+     */
     @Test
     void getHealthMsgTest() throws Exception {
         mvc.perform(get("/selector/health"))
@@ -48,6 +66,12 @@ class SelectorRestControllerTest {
                 .andExpect(content().string("The DNA selector is online"));
     }
 
+    /**
+     * Prueba para el servicio get de estadisticas
+     * Se simula una ejecucion normal del servicio
+     *
+     * @throws Exception
+     */
     @Test
     void getStatTest() throws Exception {
         StatModel statModel = StatModel.builder()
@@ -61,6 +85,13 @@ class SelectorRestControllerTest {
                 .andExpect(content().string(objectMapper.writeValueAsString(statModel)));
     }
 
+    /**
+     * Prueba para el servicio post de la funcionalidad isMutant
+     * Se simula una ejecucion normal del servicio con un respuesta true del
+     * Mock del servicio, por lo que el codigo esperado de la respuesta sera un 200
+     *
+     * @throws Exception
+     */
     @Test
     void isMutantTrueTest() throws Exception {
         String[] dna = {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
@@ -74,6 +105,13 @@ class SelectorRestControllerTest {
                 .andExpect(content().string(emptyString()));
     }
 
+    /**
+     * Prueba para el servicio post de la funcionalidad isMutant
+     * Se simula una ejecucion normal del servicio con un respuesta false del
+     * Mock del servicio, por lo que el codigo esperado de la respuesta sera un 403
+     *
+     * @throws Exception
+     */
     @Test
     void isMutantFalseTest() throws Exception {
         String[] dna = {"ATGGAA", "AGGTGC", "CTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
@@ -87,6 +125,14 @@ class SelectorRestControllerTest {
                 .andExpect(content().string(emptyString()));
     }
 
+    /**
+     * Prueba para el servicio post de la funcionalidad isMutant
+     * Se simula una ejecucion donde no se ingreso nada en el body de la solicitud
+     * lo que lanza una HttpMessageNotReadableException por lo que el codigo
+     * esperado de las respuesta sera un 400
+     *
+     * @throws Exception
+     */
     @Test
     void isMutantExceptionTest() throws Exception {
         when(selectorService.isMutant(any())).thenReturn(false);
@@ -97,6 +143,14 @@ class SelectorRestControllerTest {
                 .andExpect(content().string(containsString(("HttpMessageNotReadableException"))));
     }
 
+    /**
+     * Prueba para el servicio post de la funcionalidad isMutant
+     * Se simula una ejecucion donde al ejecutar la funcionalidad isMutant
+     * se lanza una excepcion no esperada por lo que el codigo
+     * esperado de las respuesta sera un 500
+     *
+     * @throws Exception
+     */
     @Test
     void isMutantErrorExceptionTest() throws Exception {
         String[] dna = {"ATGGAA", "AGGTGC", "CTATGT", "AGAAGG", "CCCCTA", "TCACTG"};

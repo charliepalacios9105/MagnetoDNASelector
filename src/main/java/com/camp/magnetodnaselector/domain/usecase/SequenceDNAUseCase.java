@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * Clase de negocio especifica que contiene los metodos y constantes para determinar
- * si una secuencia de AND en cuention es de un mutante o no.
+ * si una secuencia de ADN en cuention es de un mutante o no.
  * <p>
  * Se recibe como parametro un array de Strings que representan cada fila de una matriz
  * de (NxN) con la secuencia del ADN. Las letras de los Strings solo pueden ser: (A,T,C,G), las
@@ -52,7 +52,7 @@ public class SequenceDNAUseCase {
 
     /**
      * Patron de conteo que determina si en la cadena existen caracteres diferentes a los contenidos en la
-     * expreson y separados por el operador |
+     * expreson
      */
     private static final Pattern VALID_CHAR_PATTERN = Pattern.compile("[ATCG]+");
 
@@ -81,10 +81,10 @@ public class SequenceDNAUseCase {
      * Como primer paso realiza una validacion inicial para determinar que el vector
      * de strings cumpla con las condiciones minimas para ser evaluada. Si esta validacion no es
      * exitosa el metodo de validacion lanzara una {@link InvalidDNAException}. El metodo de validacion
-     * hace un primer recorrido al vector, por lo cual tambien hace la primera busqueda de cadenas
-     * para evaluar el AND. En caso de que encuentre la cantidad necesaria de cadenas cadenas de
+     * hace un primer recorrido al vector, por lo cual tambien hace la primera busqueda de cadenas, las de la dimesion horizontal,
+     * para evaluar el ADN. En caso de que encuentre la cantidad necesaria de cadenas cadenas de
      * caracteres seguidos no realizara mas busquedas y el resultado sera true.
-     * De no encontrar las cadenas necesarias para determinar que la cadena pertence a un mutante
+     * De no encontrar las cadenas necesarias para determinar que el ADN pertence a un mutante
      * sera necesario ejecutar el metodo de busqueda y generacion de cadenas el cual itera sobre el vector
      * generando las posibles cadenas que se deben evaluar en la dimension vertical y diagonal.
      * El ultimo paso para cualquiera de los casos descritos es guardar la cadena y el resultado de la
@@ -163,11 +163,11 @@ public class SequenceDNAUseCase {
      * ACGTC    Diagonal principal derecha
      * GAGAA    Diagonal principal izquerda
      * <p>
-     * Para la segunda iteracion generara la segun vertical y las diagonales que estan al lado de cada diagonal
+     * Para la segunda iteracion generara la segunda vertical y las diagonales que estan al lado de cada diagonal
      * principal siendo estas:
      * ACCAA    segunda vertical
      * AGCG     Diagonal superior derecha
-     * TCCC     Diagonal inferior derecha
+     * TCCT     Diagonal inferior derecha
      * CGCG     Diagonal superior izquerda
      * ACCA     Diagonal inferior izquerda
      * <p>
@@ -190,7 +190,7 @@ public class SequenceDNAUseCase {
         StringBuilder verticalSeq = new StringBuilder("");
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if ((i + SEQUENCE_SIZE) <= size && (j < (size - i))) { //Validacion para evitar las cadenas diagonales de menor logitud al tamanio de la secuencia
+                if ((i + SEQUENCE_SIZE) <= size && (j < (size - i))) { //Validacion para evitar las cadenas diagonales de menor logitud al tamanio minimo de la secuencia
                     lowerLeftDiagonalSeq.append(dna[i + j].charAt((size - 1) - j));
                     topRightDiagonalSeq.append(dna[j].charAt(j + i));
                     if (i > 0) {//Para que no se repitan las diagonales principales
