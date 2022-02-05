@@ -166,9 +166,11 @@ Un ejemplo de consumo desde postman se vería de la siguiente manera:
 
 
 	
-  ### Anexos 2: Informe de cobertura de pruebas
+  ### Anexos 2: Informe de cobertura de pruebas [ir](http://magnetoselector.s3-website-us-east-1.amazonaws.com/jacoco.Html/)
+
+  ### Anexos 3: Javadoc [ir](http://magnetoselector.s3-website-us-east-1.amazonaws.com/javadoc/)
 	
-  ### Anexos 3: Ánalisis de Sonar [ir](https://sonarcloud.io/summary/overall?id=charliepalacios9105_MagnetoDNASelector)
+  ### Anexos 4: Ánalisis de Sonar [ir](https://sonarcloud.io/summary/overall?id=charliepalacios9105_MagnetoDNASelector)
 	
 
 
