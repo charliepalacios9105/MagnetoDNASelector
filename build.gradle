@@ -59,7 +59,6 @@ sonarqube {
         property "sonar.organization", "charliepalacios9105"
         property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.sourceEnconding", "UTF-8"
-        property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle"
         property "sonar.test", "src/test"
         property "sonar.java.binaries", ""
         property "sonar.junit.reportsPath", ""
