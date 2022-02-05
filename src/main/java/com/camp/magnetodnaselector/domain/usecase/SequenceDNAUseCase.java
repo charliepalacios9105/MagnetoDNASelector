@@ -12,6 +12,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Clase de negocio especifica que contiene los metodos y constantes para determinar
+ * si una secuencia de AND en cuention es de un mutante o no.
+ * <p>
+ * Se recibe como parametro un array de Strings que representan cada fila de una matriz
+ * de (NxN) con la secuencia del ADN. Las letras de los Strings solo pueden ser: (A,T,C,G), las
+ * cuales representa cada base nitrogenada del ADN.
+ * <p>
+ * Se determina si un humano es mutante, si se encuentran mas de una secuencia de cuatro letras
+ * iguales, de forma diagonal, horizontal o vertical.
+ *
+ * @author Carlos Alberto Manrique Palacios
+ */
 @Component
 @RequiredArgsConstructor
 public class SequenceDNAUseCase {
@@ -43,9 +56,44 @@ public class SequenceDNAUseCase {
      */
     private static final Pattern VALID_CHAR_PATTERN = Pattern.compile("[ATCG]+");
 
+    /**
+     * Instancia de la interface {@link SequenceDNARepository} para operaciones realicionadas con el
+     * modelo de negocio {@link SequenceDNAModel}
+     */
     private final SequenceDNARepository sequenceDNARepository;
+
+    /**
+     * Instancia de la interface {@link StatRepository} para operaciones realicionadas con el
+     * modelo de negocio {@link StatModel}
+     */
     private final StatRepository statRepository;
 
+
+    /**
+     * Llamado principal para determinar si la cadena de ADN pertence a un mutante.
+     * <p>
+     * Su primera instruccion es buscar si la cadena ya se encuentra almacenada para no evaluarla si
+     * no tomar el resultado previamente guardado de la evaluacion, si no se encuentra la cadena guardada
+     * sigue con el siguiente proceso:
+     * <p>
+     * Instancia un objeto inmutable numerico que sirve de contador el cual se parametrizara
+     * en los metodos siguientes.
+     * Como primer paso realiza una validacion inicial para determinar que el vector
+     * de strings cumpla con las condiciones minimas para ser evaluada. Si esta validacion no es
+     * exitosa el metodo de validacion lanzara una {@link InvalidDNAException}. El metodo de validacion
+     * hace un primer recorrido al vector, por lo cual tambien hace la primera busqueda de cadenas
+     * para evaluar el AND. En caso de que encuentre la cantidad necesaria de cadenas cadenas de
+     * caracteres seguidos no realizara mas busquedas y el resultado sera true.
+     * De no encontrar las cadenas necesarias para determinar que la cadena pertence a un mutante
+     * sera necesario ejecutar el metodo de busqueda y generacion de cadenas el cual itera sobre el vector
+     * generando las posibles cadenas que se deben evaluar en la dimension vertical y diagonal.
+     * El ultimo paso para cualquiera de los casos descritos es guardar la cadena y el resultado de la
+     * busqueda por medio de la implementacion de metodo de guardado del objeto sequenceDNARepository.
+     *
+     * @param sequenceDNAModel Modelo de negocio que contiene la cadena a evaluar
+     * @return booleano que determina si la cadena evaluada pertenece aun mutante
+     * @throws InvalidDNAException Se lanza la excepcion en caso de que la cadena no sea valida para evaluar
+     */
     public boolean isMutant(SequenceDNAModel sequenceDNAModel) throws InvalidDNAException {
         Boolean res = sequenceDNARepository.isMutantSavedDNA(sequenceDNAModel.getDna());
         if (res == null) {
@@ -54,7 +102,7 @@ public class SequenceDNAUseCase {
             int size = dna.length;
             validDNASequence(count, dna, size);
             if (count.intValue() < MIN_NUMBER_OF_SEQ) {
-                generateAndEvalSubsequence(dna, count, size);
+                generateAndEvalSubsequence(count, dna, size);
             }
             res = count.intValue() >= MIN_NUMBER_OF_SEQ;
             sequenceDNARepository.saveDNA(sequenceDNAModel, res);
@@ -62,6 +110,23 @@ public class SequenceDNAUseCase {
         return res;
     }
 
+    /**
+     * Metodo de validacion de la cadena realiza las siguientes validaciones:
+     * <p>
+     * Que el vector tenga una longitud minima de el valor dado por la constante {@link #SEQUENCE_SIZE}.
+     * Que las variables string que estan en el vector tengan la misma longitud que el vector,
+     * garantizando que la matriz sea cuadrada.
+     * Que las variables string que estan en el vector no tengan caracteres no validos cumpliendo con el patron {@link #VALID_CHAR_PATTERN}
+     * <p>
+     * Ya que hay una evaluacion individual de cada cadena en este metodo tambien se va evaluando cada variables string
+     * para tenerminar si tienen valores que cumplan con la condicion establecida en la regla de negocio para ser un mutante
+     * y en tal caso agregar las ocurreccias encontradas al parametro count.
+     *
+     * @param count numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param dna   cadena de ADN a evaluar
+     * @param size  tamanio de la cadena de ADN
+     * @throws InvalidDNAException Se lanza la excepcion en caso de que la cadena no sea valida para evaluar
+     */
     private void validDNASequence(AtomicInteger count, String[] dna, int size) throws InvalidDNAException {
         if (size < SEQUENCE_SIZE) {
             throw new InvalidDNAException("The length of the DNA string is less than the minimum allowed");
@@ -79,7 +144,45 @@ public class SequenceDNAUseCase {
         }
     }
 
-    private void generateAndEvalSubsequence(String[] dna, AtomicInteger count, int size) {
+    /**
+     * Este metodo realiza la generacion de las cadenas totales que componen el vector de strings para
+     * su posterior evaluacion. La idea es buscar la mayor cantidad de cadenas en las dimensiones
+     * vericales y diagonales por cada iteracion que se hace.
+     * <p>
+     * Sea la matriz:
+     * AACCG
+     * TCGAA
+     * TCGCA
+     * GACTG
+     * AAGTC
+     * <p>
+     * El algoritmo a partir de dos ciclos hara el recorrido generando en cada iteracion minimo una cadena
+     * de dimension vertical y hasta 4 de dimension diagonal.
+     * En la primera iteracion generara las primera vertical y las dos diaginales principales siendo estas:
+     * ATTGA    primera vertical
+     * ACGTC    Diagonal principal derecha
+     * GAGAA    Diagonal principal izquerda
+     * <p>
+     * Para la segunda iteracion generara la segun vertical y las diagonales que estan al lado de cada diagonal
+     * principal siendo estas:
+     * ACCAA    segunda vertical
+     * AGCG     Diagonal superior derecha
+     * TCCC     Diagonal inferior derecha
+     * CGCG     Diagonal superior izquerda
+     * ACCA     Diagonal inferior izquerda
+     * <p>
+     * El proceso se repite hasta que se recorre toda la matriz siendo la ultima cadena generada la ultima vertical
+     * si no se ha cumplido la condicion de mutante antes, la cual es que el valor de count se mayor o igual
+     * al dado por la constante {@link #MIN_NUMBER_OF_SEQ}.
+     * Al finalizar cada interacion se evaluan las cadenas generadas por medio del
+     * metodo {@link #validSequenceList(AtomicInteger, StringBuilder...)} el cual de igualmenera detiene su
+     * ejecucion si la condicion del mutante se cumple. Lo cual retornara metodo {@link #isMutant(SequenceDNAModel)}
+     *
+     * @param count numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param dna   cadena de ADN a evaluar
+     * @param size  tamanio de la cadena de ADN
+     */
+    private void generateAndEvalSubsequence(AtomicInteger count, String[] dna, int size) {
         StringBuilder topLeftDiagonalSeq = new StringBuilder("");
         StringBuilder lowerRightDiagonalSeq = new StringBuilder("");
         StringBuilder lowerLeftDiagonalSeq = new StringBuilder("");
@@ -104,6 +207,16 @@ public class SequenceDNAUseCase {
         }
     }
 
+    /**
+     * Recorre la lista de cadenas de texto ingresadas en el vector sequences y realiza la evalucion
+     * de cada una para encontrar la catidad de cadenas que cumplen con el patron  {@link #COUNT_SEQUENCE_PATTERN}.
+     * <p>
+     * En caso de que el valor del numerico inmutable count sea mayor o igual al valor dado por
+     * la constante {@link #MIN_NUMBER_OF_SEQ} el metodo retornara
+     *
+     * @param count     numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param sequences listado de secuencias a evaluar
+     */
     public void validSequenceList(AtomicInteger count, StringBuilder... sequences) {
         for (StringBuilder sequence : sequences) {
             if (sequence.length() > 0) {
@@ -116,11 +229,25 @@ public class SequenceDNAUseCase {
         }
     }
 
+    /**
+     * Realiza la validacion de la cadena de texto ingresada por parametro, donde
+     * evalua si coincide con el patron {@link #COUNT_SEQUENCE_PATTERN} y le suma la
+     * cantidad de ocurrecias al contador inmutable
+     *
+     * @param seq   secuencia a evaluar
+     * @param count numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     */
     private void evalSequence(String seq, AtomicInteger count) {
         Matcher m = COUNT_SEQUENCE_PATTERN.matcher(seq);
         count.addAndGet((int) m.results().count());
     }
 
+    /**
+     * Retorna el objeto con las estadisticas solicitadas segun la implementacion del
+     * objeto statRepository
+     *
+     * @return una instancia de la clase {@link StatModel}
+     */
     public StatModel getStat() {
         return statRepository.getStat();
     }

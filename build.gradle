@@ -3,11 +3,12 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'jacoco'
+    id 'org.sonarqube' version '3.0'
 }
 
 group = 'com.camp'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.11'
+sourceCompatibility = JavaVersion.VERSION_11
 
 configurations {
     compileOnly {
@@ -28,7 +29,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
-
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 }
 
 tasks.named('test') {
@@ -41,12 +42,25 @@ test {
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
     reports {
-        xml.enabled false
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco.xml")
         csv.enabled false
-        html.destination file("jacoco/reports/jacoco.Html")
+        html.destination file("${buildDir}/reports/jacoco.Html")
     }
 }
 
 jacoco {
     toolVersion = "0.8.5"
+}
+
+sonarqube {
+    properties {
+        property "sonar.sourceEnconding", "UTF-8"
+        property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle"
+        property "sonar.test", "src/test"
+        property "sonar.java.binaries", ""
+        property "sonar.junit.reportsPath", ""
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml"
+    }
 }

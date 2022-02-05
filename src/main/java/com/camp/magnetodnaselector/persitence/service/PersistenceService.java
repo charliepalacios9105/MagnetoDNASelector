@@ -1,4 +1,4 @@
-package com.camp.magnetodnaselector.service;
+package com.camp.magnetodnaselector.persitence.service;
 
 import com.camp.magnetodnaselector.domain.model.SequenceDNAModel;
 import com.camp.magnetodnaselector.domain.model.StatModel;
