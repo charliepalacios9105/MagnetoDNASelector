@@ -73,7 +73,7 @@ Para cumplir con el desafío en su primer nivel se implementó un algoritmo en e
   
 1.	Se realiza una validación inicial del vector recibido donde se valida la longitud del mismo, la cual no debe ser inferior a la cantidad de caracteres mínimos buscados para cumplir la condición del mutante que para el caso puntual es 4. A la par se valida la longitud individual de los elementos del vector la cual debe ser igual a la longitud del vector, cumpliendo con la condición de la matriz NxN. También se valida que las cadenas individuales contenidas en el vector no tengan caracteres no permitidos en este caso los permitidos se restringen a los caracteres A,T,C,G.
 2.	Ya que la validación individual de los elementos del vector implica una primera iteración sencilla sobre este, a la par de la validación se realiza la búsqueda de la dimensión horizontal de los 4 caracteres repetidos, por lo que, si a la iteración sobre el vector termina, este es válido y se han contado 2 o más cadenas de caracteres repetidos de longitud 4, el método retorna true y termina su ejecución. La matriz de ejemplo en su dimensión horizontal no tiene tienen ninguna secuencia de caracteres que cumpla con el patrón en cuestión.
-3.	Se continua con la búsqueda de en las dimensiones vertical y diagonal donde por medio del dos ciclos repetitivos y de la manipulación sus índices se buscarán mínimo una cadena en la dimensión vertical y hasta cuatro en la dimensión diagonal.
+3.	Se continua con la búsqueda en la dimension vertical y diagonal donde por medio de dos ciclos repetitivos y de la manipulación de sus índices se buscará mínimo una cadena en la dimensión vertical y hasta cuatro en la dimensión diagonal.
 4.	La primera iteración generará la cadena de la primera vertical y las dos diagonales principales de la matriz y las evaluará. 
 
 <table>
@@ -87,12 +87,12 @@ Para cumplir con el desafío en su primer nivel se implementó un algoritmo en e
 </tbody>
 </table>
   
-5.	La siguiente iteración avanzará en la dimensión vertical y el las dos diagonales paralelas a cada una de la diagonales principales, es decir que este caso las cadenas destinadas a ser evaluadas serán 5. Las cuales serán las que se muestan a continuación. 
+5.	La siguiente iteración avanzará en la dimensión vertical y en las dos diagonales paralelas a cada una de la diagonales principales, es decir que en este caso las cadenas destinadas a ser evaluadas serán 5, las cuales serán las que se muestan a continuación:
   
 ![image](https://user-images.githubusercontent.com/21184033/152653782-8d21ac4f-4da8-495d-bdaf-268049273cf9.png)
 
-6. Este proceso se repetirá en el caso de la dimensiones diagonales hasta que la cadena resultante sea mayor o igual al minimo requerido para cumplir con el patrón, es decir 4.
-  Y se repetira para la dimensión temporal hasta que se hubiera cumplido recorrido toda la matriz. A continuación las imagenes muestran el recorrido de cada iteración.
+6. Este proceso se repetirá en el caso de las dimensiones diagonales hasta que la cadena resultante sea mayor o igual al minimo requerido para cumplir con el patrón, es decir 4.
+  Se repetirá para la dimensión vertical hasta que se hubiera recorrido toda la matriz. A continuación, las imagenes muestran el recorrido de cada iteración:
 
   ![image](https://user-images.githubusercontent.com/21184033/152654036-7656631e-780a-47f9-af86-178d61ab5330.png)
 
@@ -108,7 +108,7 @@ Para cumplir el desafío en su segundo nivel se integró el algoritmo a un proye
     	"dna": String[]
 	}
 
-El despliegue se realizo por medio del servicio AWS Elastic Beanstalk, los datos para el consumo son los siguientes:
+El despliegue se realizó por medio del servicio AWS Elastic Beanstalk. Los datos para el consumo son los siguientes:
 
 * __EndPoint__: 
 	http://magnetodnaselector-env.eba-pevaumps.us-east-1.elasticbeanstalk.com/selector/mutant
@@ -129,16 +129,16 @@ En los casos donde se presente un error a nivel del servicio o en la parametriza
 
   ### Nivel 3
 	
-Para cumplir con el desafío en su tercer nivel se implementó una base de datos MongoDB donde en un documento de guardan colecciones con las siguiente estructura:
+Para cumplir con el desafío en su tercer nivel se implementó una base de datos MongoDB donde, en un documento se guardan colecciones con las siguiente estructura:
 	
 	{
 	"sequence": String[],
 	"mutant": boolean
 	}
  
-Ya que existe un componente de persistencia cuyo objetivo es guardar las peticiones realizadas y el resultado de la validación del algoritmo isMutant, al algoritmo de validación se le agrego una búsqueda inicial a esta base de datos donde si la cadena ya esta registrada no se valida el algoritmo de validación, si no se devuelve el valor guardado en el campo “mutant” de la colección encontrada, en otro caso se ejecutará el algoritmo y la cadena y el resultado se guardará en la estructura document de MongoDB.
+Ya que existe un componente de persistencia cuyo objetivo es guardar las peticiones realizadas y el resultado de la validación del algoritmo isMutant, al algoritmo de validación se le agregó una búsqueda inicial a esta base de datos donde si la cadena ya esta registrada no se valida el algoritmo de validación, si no que se devuelve el valor guardado en el campo “mutant” de la colección encontrada, en otro caso se ejecutará el algoritmo de manera que la cadena y el resultado se guardará en la estructura document de MongoDB.
 	
-los datos para el consumo son los siguientes:
+Los datos para el consumo son los siguientes:
 
 * __EndPoint__: 
 	http://magnetodnaselector-env.eba-pevaumps.us-east-1.elasticbeanstalk.com/selector/stats
@@ -162,7 +162,7 @@ Un ejemplo de consumo desde postman se vería de la siguiente manera:
 	
 ![image](https://user-images.githubusercontent.com/21184033/152659623-a2f7fcb2-e1f1-489b-bf64-40209efe422d.png)
 
-1. El cliente realiza las peticiones http al componente de aplicación Web cuyo punto de entrada en un balanceador de carga por defecto creado por el servicio AWS Elastic Beanstalk. 
+1. El cliente realiza las peticiones http al componente de aplicación Web cuyo punto de entrada es un balanceador de carga por defecto creado por el servicio AWS Elastic Beanstalk. 
 2. El balanceador de carga redirige la petición al contenedor Elastic Beanstalk. El sericio de AWS Elastic Beanstalk permite el escalamiento de esta infraestructura por lo cual se podrían crear mas contenedores bajo el balanceador de carga.
 3. El componente de la aplicación Web tiene una conexión directa con una base de datos desplegada en el servicio Atlas de MongoDB, el cual también esta contenido en AWS.
 
