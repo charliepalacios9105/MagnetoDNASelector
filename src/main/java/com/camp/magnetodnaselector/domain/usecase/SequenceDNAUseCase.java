@@ -76,7 +76,7 @@ public class SequenceDNAUseCase {
      * no tomar el resultado previamente guardado de la evaluacion, si no se encuentra la cadena guardada
      * sigue con el siguiente proceso:
      * <p>
-     * Instancia un objeto inmutable numerico que sirve de contador el cual se parametrizara
+     * Instancia un objeto mutable numerico que sirve de contador el cual se parametrizara
      * en los metodos siguientes.
      * Como primer paso realiza una validacion inicial para determinar que el vector
      * de strings cumpla con las condiciones minimas para ser evaluada. Si esta validacion no es
@@ -122,7 +122,7 @@ public class SequenceDNAUseCase {
      * para tenerminar si tienen valores que cumplan con la condicion establecida en la regla de negocio para ser un mutante
      * y en tal caso agregar las ocurreccias encontradas al parametro count.
      *
-     * @param count numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param count numerico mutable para contar la cadenas que cumplen el patron de mutacion encontradas
      * @param dna   cadena de ADN a evaluar
      * @param size  tamanio de la cadena de ADN
      * @throws InvalidDNAException Se lanza la excepcion en caso de que la cadena no sea valida para evaluar
@@ -178,7 +178,7 @@ public class SequenceDNAUseCase {
      * metodo {@link #validSequenceList(AtomicInteger, StringBuilder...)} el cual de igualmenera detiene su
      * ejecucion si la condicion del mutante se cumple. Lo cual retornara metodo {@link #isMutant(SequenceDNAModel)}
      *
-     * @param count numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param count numerico mutable para contar la cadenas que cumplen el patron de mutacion encontradas
      * @param dna   cadena de ADN a evaluar
      * @param size  tamanio de la cadena de ADN
      */
@@ -211,10 +211,10 @@ public class SequenceDNAUseCase {
      * Recorre la lista de cadenas de texto ingresadas en el vector sequences y realiza la evalucion
      * de cada una para encontrar la catidad de cadenas que cumplen con el patron  {@link #COUNT_SEQUENCE_PATTERN}.
      * <p>
-     * En caso de que el valor del numerico inmutable count sea mayor o igual al valor dado por
+     * En caso de que el valor del numerico mutable count sea mayor o igual al valor dado por
      * la constante {@link #MIN_NUMBER_OF_SEQ} el metodo retornara
      *
-     * @param count     numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param count     numerico mutable para contar la cadenas que cumplen el patron de mutacion encontradas
      * @param sequences listado de secuencias a evaluar
      */
     public void validSequenceList(AtomicInteger count, StringBuilder... sequences) {
@@ -232,10 +232,10 @@ public class SequenceDNAUseCase {
     /**
      * Realiza la validacion de la cadena de texto ingresada por parametro, donde
      * evalua si coincide con el patron {@link #COUNT_SEQUENCE_PATTERN} y le suma la
-     * cantidad de ocurrecias al contador inmutable
+     * cantidad de ocurrecias al contador mutable
      *
      * @param seq   secuencia a evaluar
-     * @param count numerico inmutable para contar la cadenas que cumplen el patron de mutacion encontradas
+     * @param count numerico mutable para contar la cadenas que cumplen el patron de mutacion encontradas
      */
     private void evalSequence(String seq, AtomicInteger count) {
         Matcher m = COUNT_SEQUENCE_PATTERN.matcher(seq);
